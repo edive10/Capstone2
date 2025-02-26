@@ -26,7 +26,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.util.Log
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import android.net.Uri
+import androidx.core.content.FileProvider
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 class MoodTrackingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,12 +66,13 @@ fun MoodTrackingScreen(physicalDistress: Int) {
     val stressLevel = sharedPreferences.getInt("STRESS_LEVEL", -1)
     val professionalHelp = sharedPreferencesHelp.getString("ProfessionalHelp", "No data available") ?: "No data available"
     val medicationList = sharedPreferences.getString("medication_list", "No medication recorded") ?: "No medication recorded"
-
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF7F1EB))
-            .padding(24.dp),
+            .padding(24.dp)
+            .verticalScroll(scrollState),  // اضافه کردن قابلیت اسکرول
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -104,6 +114,35 @@ fun MoodTrackingScreen(physicalDistress: Int) {
         ) {
             Text(text = "Go to Profile", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = {
+                val moodData = """
+            Sleep Quality: $sleepQuality
+            Stress Level: ${getStressEmoji(stressLevel)} $stressLevel
+            Any Professional Help: $professionalHelp
+            Medication: $medicationList
+            Physical Distress: ${if (physicalDistress == 1) "Yes" else "No"}
+            Your Mood Goal: $assessmentResult
+        """.trimIndent()
+
+                exportMoodTrackingToPDF(context, moodData)
+            },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            shape = RoundedCornerShape(32.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A322F))
+        ) {
+            Text(text = "Export to PDF", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = { sharePDF(context) },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            shape = RoundedCornerShape(32.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A322F))
+        ) {
+            Text(text = "Send to ChatGPT", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
     }
 }
 
@@ -130,4 +169,59 @@ fun getStressEmoji(stressLevel: Int): String {
         5 -> "😖"
         else -> "❓"
     }
+}
+fun exportMoodTrackingToPDF(context: Context, moodData: String) {
+    val pdfDocument = PdfDocument()
+    val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
+    val page = pdfDocument.startPage(pageInfo)
+    val canvas = page.canvas
+    val paint = Paint()
+
+    paint.textSize = 16f
+    paint.isFakeBoldText = true
+
+    val lines = moodData.split("\n")
+    var yPosition = 50f
+
+    for (line in lines) {
+        canvas.drawText(line, 50f, yPosition, paint)
+        yPosition += 30f
+    }
+
+    pdfDocument.finishPage(page)
+
+    val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MoodTracking.pdf")
+
+    try {
+        val outputStream = FileOutputStream(directory)
+        pdfDocument.writeTo(outputStream)
+        pdfDocument.close()
+        outputStream.close()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+}
+fun sharePDF(context: Context) {
+    val file = File(
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+        "MoodTracking.pdf"
+    )
+
+    if (!file.exists()) {
+        return
+    }
+
+    val uri: Uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.provider",
+        file
+    )
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "application/pdf"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    context.startActivity(Intent.createChooser(intent, "Share PDF via"))
 }
