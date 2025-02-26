@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication"
+        tools:targetApi="31">
+        <activity
+            android:name=".BottomNavigationBar"
+            android:exported="false" />
+        <activity
+            android:name=".UserViewModel"
+            android:exported="false" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NoteDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StressLevelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MedicationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SleepQualityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AgeSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhysicalDistressActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfessionalHelpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NextActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WeightSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GenderSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AssessmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotesActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MusicPlayerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MoodTrackingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ChatActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
