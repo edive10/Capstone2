@@ -36,7 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-//import com.example.myapplication.SleepQualityActivity
 
 class PhysicalDistressActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +50,7 @@ class PhysicalDistressActivity : ComponentActivity() {
 fun PhysicalDistressScreen() {
     var selectedOption by remember { mutableStateOf(0) }
     val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -174,6 +174,7 @@ fun PhysicalDistressScreen() {
         Button(
             onClick = {
                 val intent = Intent(context, SleepQualityActivity::class.java)
+                intent.putExtra("physical_distress", selectedOption)
                 context.startActivity(intent)
             },
             modifier = Modifier

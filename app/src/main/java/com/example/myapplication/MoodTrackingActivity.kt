@@ -26,33 +26,33 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.util.Log
 
 class MoodTrackingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-
+        val physicalDistress = intent.getIntExtra("physical_distress", 0) // مقدار دریافتی
 
         val medicationList = intent.getStringExtra("medication_list")
-
 
         if (!medicationList.isNullOrEmpty()) {
             sharedPreferences.edit().putString("medication_list", medicationList).apply()
         }
 
         setContent {
-            MoodTrackingScreen()
+            MoodTrackingScreen(physicalDistress)
         }
     }
 }
 
 @Composable
-fun MoodTrackingScreen() {
+fun MoodTrackingScreen(physicalDistress: Int) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
     val sharedPreferencesHelp = context.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
-
+    val assessmentResult = sharedPreferences.getString("assessment_result", "No Data")
     val sleepQuality = sharedPreferences.getString("sleep_quality", "No data available") ?: "No data available"
     val stressLevel = sharedPreferences.getInt("STRESS_LEVEL", -1)
     val professionalHelp = sharedPreferencesHelp.getString("ProfessionalHelp", "No data available") ?: "No data available"
@@ -84,7 +84,11 @@ fun MoodTrackingScreen() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         InfoBox(text = "Medication: $medicationList")
+        Spacer(modifier = Modifier.height(16.dp))
+        InfoBox(text = "Physical Distress: ${if (physicalDistress == 1) "Yes, one or multiple" else "I'm experiencing physical pain in different places over my body."}")
 
+        Spacer(modifier = Modifier.height(32.dp))
+        InfoBox(text = "Your Mood Goal: $assessmentResult")
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(

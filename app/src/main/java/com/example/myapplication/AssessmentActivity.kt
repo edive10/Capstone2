@@ -39,6 +39,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Context
+import android.content.SharedPreferences
+
+
 
 class AssessmentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +57,7 @@ class AssessmentActivity : ComponentActivity() {
 fun AssessmentScreen() {
     var selectedOption by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
     val options = listOf(
         "I wanna reduce stress" to Icons.Filled.Favorite,
         "I wanna try AI Therapy" to Icons.Filled.SmartToy,
@@ -114,11 +119,15 @@ fun AssessmentScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Continue Button
         Button(
             onClick = {
+                // ذخیره‌ی انتخاب کاربر
+                sharedPreferences.edit().putString("assessment_result", selectedOption).apply()
+
+                // رفتن به صفحه بعدی
                 val intent = Intent(context, NextActivity::class.java)
-                context.startActivity(intent) },
+                context.startActivity(intent)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
